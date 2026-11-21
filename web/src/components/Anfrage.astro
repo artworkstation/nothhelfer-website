@@ -4,11 +4,12 @@ interface Props { typ: 'kontakt' | 'gutachten' | 'suchauftrag' | 'objekt'; objek
 const { typ, objekt, titel, orte = [] } = Astro.props
 const action = `${(import.meta.env.PUBLIC_CMS_URL || 'http://localhost:3000').replace(/\/$/, '')}/api/anfragen`
 const id = `f-${typ}`
+const vorschau = import.meta.env.PUBLIC_PREVIEW === '1'
 const btn = titel || ({ kontakt: 'Nachricht', gutachten: 'Anfrage', suchauftrag: 'Suchauftrag', objekt: 'Anfrage' } as const)[typ]
 const chips = (name: string, vals: string[], radio = false) => vals.map((v, i) => ({ name, v, id: `${id}-${name}${i}`, radio, checked: radio && i === 0 }))
 const suchOrte = orte.length ? [...orte, 'ganze Region'] : ['Ulm', 'Neu-Ulm', 'ganze Region']
 ---
-<form class="form" method="post" action={action} data-anfrage={typ} data-ok={`${id}-ok`} novalidate={false}>
+<form class="form" method="post" action={action} data-anfrage={typ} data-ok={`${id}-ok`} data-vorschau={vorschau ? '1' : undefined}>
   {typ === 'objekt' && <div class="field full"><label for={`${id}-o`}>Objekt</label><input id={`${id}-o`} name="objekt" value={objekt} readonly /></div>}
   {typ === 'kontakt' && (
     <div class="field full"><label>Anliegen</label><div class="chips">
@@ -42,4 +43,4 @@ const suchOrte = orte.length ? [...orte, 'ganze Region'] : ['Ulm', 'Neu-Ulm', 'g
   <label class="check full"><input type="checkbox" name="datenschutz" required /> Ich stimme der Verarbeitung meiner Daten gemäß <a href="/datenschutz/" style="text-decoration:underline">Datenschutzerklärung</a> zu.</label>
   <div class="full"><button class="btn fill" type="submit">{btn} senden <Fragment set:html={ICON.arrow} /></button><p class="err" role="alert"></p></div>
 </form>
-<div class="success" id={`${id}-ok`}><h3>Vielen Dank!</h3><p>Deine Anfrage ist eingegangen. Wir melden uns innerhalb eines Werktags bei dir.</p></div>
+<div class="success" id={`${id}-ok`}><h3>Vielen Dank!</h3><p>Deine Anfrage ist eingegangen. Wir melden uns innerhalb eines Werktags bei dir.</p>{vorschau && <p class="note">Vorschau: Es wurde nichts versendet. Auf dem Server landet die Anfrage im CMS und per E-Mail bei Nothhelfer.</p>}</div>

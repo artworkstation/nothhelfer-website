@@ -2,11 +2,12 @@
 /** OpenStreetMap-Karte, lädt erst nach Klick (Datenschutz). radius in Metern → Kreis statt Punkt. */
 interface Props { lat: number; lng: number; radius?: number; titel?: string }
 const { lat, lng, radius = 0, titel = 'Karte' } = Astro.props
+const vorschau = import.meta.env.PUBLIC_PREVIEW === '1'
 ---
 <div class="lmap" data-lat={lat} data-lng={lng} data-r={radius} aria-label={titel}>
   <div class="mapc" style="position:absolute;inset:0"></div>
   <div class="consent">
     <p>Zum Anzeigen der Karte wird OpenStreetMap geladen. Dabei wird deine IP-Adresse an die Server von OpenStreetMap übertragen. Mehr dazu in der <a href="/datenschutz/" style="text-decoration:underline">Datenschutzerklärung</a>.</p>
-    <button class="btn" type="button">Karte laden</button>
+    {vorschau ? <p><b>Vorschau:</b> Hier erscheint auf dem Server die OpenStreetMap-Karte{radius ? ' mit einem Kreis von ca. 1 km Durchmesser um die ungefähre Lage' : ''}.</p> : <button class="btn" type="button">Karte laden</button>}
   </div>
 </div>

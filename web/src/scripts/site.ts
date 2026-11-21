@@ -100,7 +100,7 @@ document.querySelectorAll<HTMLFormElement>('form[data-anfrage]').forEach((f) =>
     delete body.seite
     if (btn) btn.disabled = true
     try {
-      const r = await fetch(f.action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      const r = f.dataset.vorschau ? { ok: true } : await fetch(f.action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       if (!r.ok) throw new Error(String(r.status))
       const ok = document.getElementById(f.dataset.ok || '')
       f.style.display = 'none'

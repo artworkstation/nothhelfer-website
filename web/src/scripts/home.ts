@@ -57,7 +57,7 @@ if (hero) {
       .from('#tiles .tile, .mcta a', { y: 80, opacity: 0, duration: 1.2, stagger: 0.1 }, 0.6)
 
     const scene = gsap.timeline({ scrollTrigger: { trigger: '#hero', start: 'top top', end: '+=260%', scrub: 1, pin: true, anticipatePin: 1 } })
-    scene.to('#hint', { opacity: 0, duration: 0.05 }, 0)
+    scene.to(['#hint', '#hintArrow'], { opacity: 0, duration: 0.05 }, 0)
       .to('#heroCopy', { yPercent: -60, opacity: 0, duration: 0.22, ease: 'none' }, 0)
       .to('#tiles', { y: -120, opacity: 0, duration: 0.2, ease: 'none' }, 0.02)
       .to('#cloud', { opacity: 0, duration: 0.2, ease: 'none' }, 0.04)
