@@ -17,6 +17,8 @@ concurrency:
 
 jobs:
   build-deploy:
+    # läuft erst, wenn in GitHub die Variable CMS_URL gesetzt ist (siehe docs/EINRICHTUNG.md)
+    if: ${{ vars.CMS_URL != '' }}
     runs-on: ubuntu-latest
     defaults:
       run:
