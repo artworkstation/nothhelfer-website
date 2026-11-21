@@ -48,8 +48,8 @@ if (hero) {
   const pens = gsap.utils.toArray<SVGPathElement>('.pen')
   const total = pens.reduce((a, p) => a + parseFloat(p.dataset.l || '0'), 0)
   if (reduce) {
-    gsap.set(pens, { strokeDashoffset: 0 })
-    gsap.set(['#immo', '#claim'], { opacity: 1 })
+    gsap.set(pens, { strokeDashoffset: 0, visibility: 'visible' })
+    gsap.set('#claim', { opacity: 1 })
   } else {
     gsap.timeline({ defaults: { ease: 'expo.out' } })
       .from('#heroBg', { scale: 1.18, duration: 2.4, ease: 'power3.out' })
@@ -60,13 +60,17 @@ if (hero) {
     scene.to('#hint', { opacity: 0, duration: 0.05 }, 0)
       .to('#heroCopy', { yPercent: -60, opacity: 0, duration: 0.22, ease: 'none' }, 0)
       .to('#tiles', { y: -120, opacity: 0, duration: 0.2, ease: 'none' }, 0.02)
+      .to('#cloud', { opacity: 0, duration: 0.2, ease: 'none' }, 0.04)
       .to('#heroBg', { scale: 1.14, yPercent: -4, duration: 1, ease: 'none' }, 0)
       .to('#dusk', { opacity: 1, duration: 0.3, ease: 'none' }, 0.08)
       .to('#dusk2', { opacity: 1, duration: 0.3, ease: 'none' }, 0.2)
-      .to('#immo', { opacity: 1, letterSpacing: '0.5em', duration: 0.1 }, 0.3)
     let t = 0.34
     const span = 0.42
-    pens.forEach((p) => { const d = (parseFloat(p.dataset.l || '0') / total) * span; scene.to(p, { strokeDashoffset: 0, duration: d, ease: 'none' }, t); t += d })
+    pens.forEach((p) => {
+      const d = (parseFloat(p.dataset.l || '0') / total) * span
+      scene.set(p, { visibility: 'visible' }, t).to(p, { strokeDashoffset: 0, duration: d, ease: 'none' }, t)
+      t += d
+    })
     scene.to('#claim', { opacity: 1, y: -6, duration: 0.08 }, 0.78)
       .to('#fog', { yPercent: -95, duration: 0.2, ease: 'none' }, 0.86)
       .to('#sign', { yPercent: -20, opacity: 0, duration: 0.12, ease: 'none' }, 0.92)

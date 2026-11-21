@@ -17,9 +17,9 @@ const k = b.kacheln || []
     {(b.subline || b.sublineAkzent) && <p class="sub"><span class="ln"><span>{b.subline} {b.sublineAkzent && <em>{b.sublineAkzent}</em>}</span></span></p>}
     {k.length > 0 && <div class="mcta">{k.map((t: any, i: number) => <a class={i === 0 ? 'p' : 's'} href={href(t.link)}>{t.text.replace(/\n/g, ' ')}{i === 0 && <Fragment set:html={ICON.arrow} />}</a>)}</div>}
   </div>
+  <div class="cloud" id="cloud"></div>
   {k.length > 0 && <div class="tiles" id="tiles">{k.map((t: any) => <a href={href(t.link)} class="tile"><Img m={t.bild} alt="" sizes="220px" /><span set:html={t.text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>')} /></a>)}</div>}
   <div class="sign" id="sign" aria-hidden="true">
-    <span class="immo" id="immo">Immobilien</span>
     <svg viewBox="95 245 690 190">
       <defs><mask id="penmask" maskUnits="userSpaceOnUse" x="0" y="150" width="900" height="400" set:html={mask} /></defs>
       <g mask="url(#penmask)" fill="#fff" set:html={glyph} />
