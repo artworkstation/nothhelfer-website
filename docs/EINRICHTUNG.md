@@ -78,6 +78,7 @@ Umgebungsvariablen (Vorlage: `cms/.env.example`):
 | `PAYLOAD_SECRET` | langes Zufallspasswort (z. B. `openssl rand -hex 32`) |
 | `PAYLOAD_PUBLIC_SERVER_URL` | `https://cms.immobilien-nothhelfer.de` (vor dem Livegang: die Testdomain) |
 | `SITE_URL` | `https://www.immobilien-nothhelfer.de` (vor dem Livegang: die Testdomain) |
+| `ADMIN_EMAIL` | `weihs@artwork-station.de` – nur diese Adresse kann den ersten Zugang anlegen und wird automatisch Admin |
 | `EXTRA_ORIGINS` | weitere Adressen, die Formulare senden dürfen, kommagetrennt (z. B. Testdomain) |
 | `GITHUB_REPO` | `artworkstation/nothhelfer-website` |
 | `GITHUB_DISPATCH_TOKEN` | siehe Schritt 6 |
@@ -178,8 +179,10 @@ SMTP-Zugangsdaten beim Container `cms` eintragen.
 ## 8. Erste Benutzer anlegen
 
 1. `https://cms.immobilien-nothhelfer.de/admin` öffnen.
-2. Beim ersten Aufruf fragt das CMS nach dem ersten Benutzer:
-   **weihs@artwork-station.de**, Rolle **Administrator**.
+2. Beim ersten Aufruf fragt das CMS nach dem ersten Benutzer. Hier
+   **weihs@artwork-station.de** eintragen – nur diese Adresse (Variable
+   `ADMIN_EMAIL`) wird angenommen und automatisch **Administrator**.
+   Jede andere Adresse wird abgelehnt, solange es noch keinen Zugang gibt.
 3. Danach unter **Verwaltung → Benutzer → Neu**:
    **info@immobilien-nothhelfer.de**, Rolle **Redakteur**.
 
