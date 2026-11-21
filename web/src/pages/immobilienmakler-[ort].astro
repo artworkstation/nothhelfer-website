@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro'
+import Crumbs from '../components/Crumbs.astro'
+import ObjKarte from '../components/ObjKarte.astro'
+import CtaBandInner from '../components/CtaBandInner.astro'
+import { getGemeinden, getObjekte } from '../lib/cms'
+import { richText } from '../lib/richtext'
+import { regionMap } from '../lib/region'
+import { ICON } from '../lib/icons'
+
+export async function getStaticPaths() {
+  const objekte = await getObjekte()
+  return (await getGemeinden()).map((g: any) => ({ params: { ort: g.slug }, props: { g, objekte: objekte.filter((o: any) => o.ort === g.name || o.ort?.startsWith(g.name + '/')) } }))
+}
+const { g, objekte } = Astro.props as any
+const n = g.name
+const fragen = g.fragen?.length ? g.fragen : [
+  { frage: `Was kostet ein Haus in ${n}?`, antwort: `Die Preise in ${n} hängen stark von Lage, Baujahr und Zustand ab. Eine erste Orientierung gibt unsere Online-Wertermittlung – eine verlässliche Einschätzung bekommst du von Erik Nothhelfer als Diplom-Sachverständigem (DIA).` },
+  { frage: `Bewertet Nothhelfer auch Immobilien in ${n}?`, antwort: `Ja. ${n} liegt in unserem Kerngebiet im Umkreis von 40 km um Ulm.` },
+]
+const ld = [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: fragen.map((f: any) => ({ '@type': 'Question', name: f.frage, acceptedAnswer: { '@type': 'Answer', text: f.antwort } })) }]
+const text = richText(g.text)
+---
+<Base title={g.seo?.metaTitel || `Immobilienmakler ${n} – Immobilien Nothhelfer`} description={g.seo?.metaBeschreibung || `Immobilienmakler für ${n}: Verkauf, Vermietung und Bewertung mit Immobilien Nothhelfer.`} ogImage={g.seo?.ogBild} noindex={g.seo?.noindex} jsonld={ld}>
+<main>
+  <div style="height:78px"></div>
+  <Crumbs items={[{ name: 'Region', url: '/region/ulm-neu-ulm/' }, { name: `Immobilienmakler ${n}` }]} />
+  <section class="intro"><div class="wrap"><div class="grid2">
+    <div><span class="label" style="display:block;margin-bottom:18px">{n}{g.landkreis && ` · ${g.landkreis}`}</span>
+      <h1 style="font-size:var(--h2);font-weight:500;line-height:1.08"><span class="ln"><span>Dein Immobilienmakler</span></span><span class="ln"><span class="blue">für {n}.</span></span></h1></div>
+    <div class="fadeup"><p class="lead">{g.einleitung || `Verkaufen, kaufen, vermieten oder bewerten in ${n} – mit einem Ansprechpartner, der die Region kennt.`}</p></div>
+  </div></div></section>
+  <section class="sec hell"><div class="wrap grid2">
+    <div><span class="label">Lage</span><h2><span class="ln"><span>{n} im</span></span><span class="ln"><span class="blue">Nothhelfer-Gebiet</span></span></h2>
+      {text && <div class="prose fadeup" style="margin-top:20px" set:html={text} />}
+      <div class="btnrow"><a class="btn fill" href="/verkaufen/online-wertermittlung/">Immobilie in {n} bewerten <Fragment set:html={ICON.arrow} /></a><a class="btn" href="/immobilien/suchauftrag/">Suchauftrag {n} <Fragment set:html={ICON.plus} /></a></div></div>
+    <div class="fadeup" set:html={regionMap({ highlight: { name: n, lat: g.lat, lng: g.lng } })} />
+  </div></section>
+  {objekte.length > 0 && <section class="angebote" style="background:#fff"><div class="wrap"><div class="head"><h2>Aktuelle Angebote <span class="blue">in {n}</span></h2></div>{objekte.map((o: any) => <ObjKarte o={o} />)}</div></section>}
+  <section class="sec"><div class="wrap grid2">
+    <div><span class="label">Häufige Fragen</span><h2><span class="ln"><span>Fragen zu</span></span><span class="ln"><span class="blue">Immobilien in {n}</span></span></h2></div>
+    <div class="faq fadeup">{fragen.map((f: any) => <details><summary>{f.frage}</summary><p>{f.antwort}</p></details>)}</div>
+  </div></section>
+  <CtaBandInner />
+</main>
+</Base>

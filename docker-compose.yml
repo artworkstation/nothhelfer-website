@@ -1,0 +1,39 @@
+# Lokaler Testbetrieb wie auf dem Server: PostgreSQL + CMS + Website (nginx)
+#   docker compose up -d --build
+#   Startinhalte einspielen: docker compose run --rm seed
+#   CMS:     http://localhost:3000/admin
+#   Website: erst bauen (cd web && npm run build), dann http://localhost:8080
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: payload
+      POSTGRES_PASSWORD: payload
+      POSTGRES_DB: nothhelfer
+    volumes: [db:/var/lib/postgresql/data]
+  cms:
+    build: { context: ./cms, target: runner }
+    depends_on: [postgres]
+    ports: ['3000:3000']
+    environment: &cmsenv
+      DATABASE_URL: postgres://payload:payload@postgres:5432/nothhelfer
+      PAYLOAD_SECRET: nur-lokal-zum-testen
+      PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3000
+      SITE_URL: http://localhost:8080
+      EXTRA_ORIGINS: http://localhost:4321
+    volumes: [media:/data/media]
+  seed:
+    build: { context: ./cms, target: tools }
+    profiles: [tools]
+    depends_on: [postgres]
+    environment: *cmsenv
+    volumes: [media:/data/media]
+  web:
+    image: nginx:1.27-alpine
+    ports: ['8080:80']
+    volumes:
+      - ./web/dist:/usr/share/nginx/html/public:ro
+      - ./web/deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+volumes:
+  db:
+  media:

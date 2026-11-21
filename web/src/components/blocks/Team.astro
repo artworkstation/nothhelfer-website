@@ -1,0 +1,12 @@
+---
+import Img from '../Img.astro'
+import { href } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+const { b } = Astro.props
+---
+<section class="sec hell"><div class="wrap">{b.label && <span class="label">{b.label}</span>}<div class="team">
+  {(b.mitglieder || []).map((m: any) => (
+    <div class="member fadeup">{m.bild && <div class="im"><Img m={m.bild} alt={m.name} sizes="(max-width: 900px) 100vw, 40vw" /></div>}<b>{m.name}</b>{m.funktion}
+      {m.link && <div class="btnrow"><a class="btn" href={href(m.link)}>{href(m.link).startsWith('/kontakt') ? 'Kontakt' : 'Mehr erfahren'} <Fragment set:html={ICON.arrow} /></a></div>}</div>
+  ))}
+</div></div></section>

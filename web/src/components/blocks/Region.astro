@@ -1,0 +1,13 @@
+---
+import { regionMap } from '../../lib/region'
+const { b } = Astro.props
+const gem = (b.gemeinden || []).filter((g: any) => typeof g === 'object')
+---
+<section class="sec hell"><div class="wrap grid2">
+  <div>{b.label && <span class="label">{b.label}</span>}
+    <h2>{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span class="blue">{b.zeile2}</span></span>}</h2>
+    {b.text && <p class="fadeup" style="margin-top:20px">{b.text}</p>}
+    {gem.length > 0 && <div class="towns fadeup">{gem.map((g: any) => <a href={`/immobilienmakler-${g.slug}/`}>Immobilienmakler {g.name}</a>)}</div>}
+  </div>
+  <div class="fadeup" set:html={regionMap({ refs: b.referenzen ? 18 : 0 })} />
+</div></section>

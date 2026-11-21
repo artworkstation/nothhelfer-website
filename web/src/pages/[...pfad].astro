@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro'
+import Blocks from '../components/Blocks.astro'
+import { getPages } from '../lib/cms'
+import { crumbsFor, meta } from '../lib/seite'
+
+export async function getStaticPaths() {
+  const pages = await getPages()
+  return pages.filter((p: any) => p.pfad !== 'startseite').map((p: any) => ({ params: { pfad: p.pfad }, props: { page: p } }))
+}
+const { page } = Astro.props as any
+const crumbs = await crumbsFor(page.pfad, page.titel)
+const m = meta(page, `${page.titel} – Immobilien Nothhelfer Ulm`)
+---
+<Base {...m}><main><Blocks layout={page.layout} crumbs={crumbs} /></main></Base>

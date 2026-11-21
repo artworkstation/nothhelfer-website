@@ -1,0 +1,18 @@
+---
+import Img from '../Img.astro'
+const { b } = Astro.props
+const lbl = (b.label || '').replace(/NOTHHELFER/, '<b>NOTHHELFER</b>')
+---
+<section class="warum">
+  <div class="wrap">
+    <div class="grid2">
+      <div>{b.label && <span class="label" set:html={lbl} />}</div>
+      <p class="bigtext" data-words>{b.text}{b.textAkzent && <> <span class="accent">{b.textAkzent}</span></>}</p>
+    </div>
+    {(b.video?.url || b.bild) && (
+      <div class="imgwide">
+        {b.video?.url ? <video src={b.video.url} poster={b.bild?.url} autoplay muted loop playsinline preload="metadata" aria-label={b.bild?.alt || ''}></video> : <Img m={b.bild} sizes="(max-width: 1320px) 100vw, 1320px" />}
+      </div>
+    )}
+  </div>
+</section>

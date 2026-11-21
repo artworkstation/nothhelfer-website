@@ -1,0 +1,35 @@
+---
+import Img from '../Img.astro'
+import { href } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+import { richText } from '../../lib/richtext'
+const { b } = Astro.props
+const zeilen = (b.headline || '').split('\n').filter(Boolean)
+const icon = (b.button?.link || '').startsWith('mailto:') ? ICON.mail : ICON.arrow
+---
+<section class="komp">
+  <div class="wrap">
+    {b.label && <div class="top"><span class="label">{b.label}</span></div>}
+    <div class="komp-grid">
+      <div>
+        <h2>{zeilen.map((z: string) => <span class="ln"><span>{z}</span></span>)}</h2>
+        {b.portrait && <div class="erik par"><Img m={b.portrait} sizes="(max-width: 900px) 80vw, 35vw" /></div>}
+      </div>
+      <div>
+        {b.bild && <div class="aerial par"><Img m={b.bild} sizes="(max-width: 900px) 100vw, 55vw" /></div>}
+        <div class="txt fadeup">
+          <Fragment set:html={richText(b.text)} />
+          {b.button?.text && <a href={href(b.button.link)} class="btn">{b.button.text} <Fragment set:html={icon} /></a>}
+        </div>
+      </div>
+    </div>
+    {b.fakten?.length > 0 && (
+      <div class="facts">
+        {b.fakten.map((f: any) => {
+          const n = /^\d+$/.test(f.zahl) && f.zaehlen
+          return <div class="fact"><div class="n">{n ? <span data-count={f.zahl}>{f.zahl}</span> : f.zahl}{f.einheit && ` ${f.einheit}`}</div>{f.text && <div class="l">{f.text}</div>}</div>
+        })}
+      </div>
+    )}
+  </div>
+</section>

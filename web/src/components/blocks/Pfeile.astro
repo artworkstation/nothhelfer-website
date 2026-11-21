@@ -1,0 +1,24 @@
+---
+/** Vier Pfeile in exakter Form aus dem Layout: links zwei mit einem durchgehenden Bild, rechts zwei mit einem zweiten. */
+import { bildUrl, href } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+import { br } from '../../lib/richtext'
+const { b, i } = Astro.props
+const L = bildUrl(b.bildLinks), R = bildUrl(b.bildRechts)
+const offs = [0, 229.9, 459.8, 689.7]
+const pts = (x: number) => [[x, 0], [x + 149.875, 214.04], [x, 428.09], [x + 158.02, 428.09], [x + 307.9, 214.04], [x + 158.02, 0]].map((p) => p.map((v) => v.toFixed(2)).join(',')).join(' ')
+const id = `cv${i}`
+---
+<section class="nichtnur">
+  {(b.zeile1 || b.zeile2) && <div class="wrap"><h2 class="reveal-h"><span class="ln"><span><span class="blue">{b.zeile1}</span> {b.zeile2}</span></span></h2></div>}
+  <div class="chev"><svg viewBox="0 0 997.6 428.09" role="img" aria-label={[b.bildLinks?.alt, b.bildRechts?.alt].filter(Boolean).join(', ')}>
+    <defs>{offs.map((x, k) => <clipPath id={`${id}-${k}`}><polygon points={pts(x)} /></clipPath>)}</defs>
+    {offs.map((_, k) => (
+      <g class="cv" clip-path={`url(#${id}-${k})`}><image href={k < 2 ? L : R} x={k < 2 ? 0 : 459.8} y="0" width="537.8" height="428.09" preserveAspectRatio="xMidYMid slice" /></g>
+    ))}
+  </svg></div>
+  <div class="wrap">
+    {(b.text || b.textAkzent) && <p class="fadeup"><Fragment set:html={br(b.text)} />{b.textAkzent && <><br /><strong set:html={br(b.textAkzent)} /></>}</p>}
+    {b.button?.text && <a href={href(b.button.link)} class="btn fadeup">{b.button.text} <Fragment set:html={ICON.arrow} /></a>}
+  </div>
+</section>

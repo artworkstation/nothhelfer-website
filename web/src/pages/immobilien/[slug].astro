@@ -1,0 +1,98 @@
+---
+import Base from '../../layouts/Base.astro'
+import Crumbs from '../../components/Crumbs.astro'
+import Img from '../../components/Img.astro'
+import ObjKarte from '../../components/ObjKarte.astro'
+import OsmKarte from '../../components/OsmKarte.astro'
+import Anfrage from '../../components/Anfrage.astro'
+import PersonBox from '../../components/PersonBox.astro'
+import CtaBandInner from '../../components/CtaBandInner.astro'
+import { getObjekte, datum, qm } from '../../lib/cms'
+import { richText } from '../../lib/richtext'
+import { versatz } from '../../lib/region'
+import { ICON } from '../../lib/icons'
+
+export async function getStaticPaths() {
+  const alle = await getObjekte()
+  return alle.map((o: any) => ({ params: { slug: o.slug }, props: { o, alle } }))
+}
+const { o, alle } = Astro.props as any
+const d = o.daten || {}, en = o.energie || {}
+const klassen = ['A+', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+const farben = ['#1a9641', '#4cb04a', '#8ac650', '#c4dc4f', '#f3e93a', '#f6b532', '#f08a2b', '#e65127', '#d7191c']
+const pos = en.kennwert ? (Math.min(en.kennwert, 250) / 250) * 100 : null
+const links = [
+  ['Immobilien-ID', o.externeId || String(o.id).padStart(5, '0')], ['Ort', `${o.plz} ${o.ort}`], ['Objektart', o.objektart], ['Vermarktung', o.vermarktung],
+  ['Baujahr', d.baujahr], ['Zimmer', d.zimmer], ['Badezimmer', d.baeder],
+].filter(([, v]) => v)
+const rechts = [
+  ['Wohn-/Nutzfläche (ca.)', d.wohnflaeche && qm(d.wohnflaeche)], ['Grundstück (ca.)', d.grundstueck && qm(d.grundstueck)], ['Energieausweis', en.art],
+  [en.art === 'Verbrauchsausweis' ? 'Endenergieverbrauch' : 'Endenergiebedarf', en.kennwert && `${en.kennwert} kWh/(m²·a)`], ['Energieeffizienzklasse', en.klasse],
+  ['Heizung', d.heizung], ['Verfügbar', d.verfuegbar], ...(d.weitere || []).map((w: any) => [w.bezeichnung, w.wert]),
+].filter(([, v]) => v)
+const andere = (alle.filter((x: any) => x.id !== o.id && x.vermarktung === o.vermarktung).slice(0, 2))
+const weitere = andere.length ? andere : alle.filter((x: any) => x.id !== o.id).slice(0, 2)
+const lage = o.lage?.lat && o.lage?.lng ? versatz(o.lage.lat, o.lage.lng, o.slug) : null
+const titel = o.seo?.metaTitel || `${o.titel} in ${o.ort} – Immobilien Nothhelfer`
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateListing',
+  name: o.titel,
+  description: o.kurztext,
+  datePosted: o.eingestellt,
+  image: (o.bilder || []).map((b: any) => b.url).filter(Boolean),
+  url: new URL(`/immobilien/${o.slug}/`, Astro.site).href,
+}
+---
+<Base title={titel} description={o.seo?.metaBeschreibung || o.kurztext} ogImage={o.seo?.ogBild || o.bilder?.[0]} noindex={o.seo?.noindex} jsonld={[ld]}>
+<main>
+  <div style="height:78px"></div>
+  <Crumbs items={[{ name: 'Immobilien', url: '/immobilien/' }, { name: o.teaser }]} />
+  <section class="sec" style="padding-top:0"><div class="wrap">
+    <div class="xp-top">
+      <a class="iconbtn" href="#anfrage" title="Besichtigung anfragen" aria-label="Besichtigung anfragen" set:html={ICON.cal} />
+      <button class="iconbtn" type="button" title="Exposé teilen" aria-label="Exposé teilen" data-share set:html={ICON.send} />
+      <a class="btn" href="/immobilien/">Angebot schließen <Fragment set:html={ICON.close} /></a>
+    </div>
+    <div class="gallery"><div class="track">{(o.bilder || []).map((b: any, k: number) => <Img m={b} alt={`${o.titel} – Bild ${k + 1}`} eager={k === 0} sizes="(max-width: 1320px) 100vw, 1320px" />)}</div>
+      <button class="gnav gprev" type="button" aria-label="Vorheriges Bild" set:html={ICON.left} /><button class="gnav gnext" type="button" aria-label="Nächstes Bild" set:html={ICON.right} /><span class="gcount"></span></div>
+    <div class="xp-title"><span class="tagk" style="margin:0 0 14px;display:inline-block">{o.vermarktung}{o.objektstatus === 'reserviert' && ' · reserviert'}</span><h1>{o.titel}</h1>{o.preis && <p class="price">{o.preis}</p>}<p class="loc">{o.plz} {o.ort} · eingestellt am {datum(o.eingestellt)}</p></div>
+    <div class="facts5">
+      <div><b>{links[0][1]}</b><span>ID Immobilie</span></div>
+      <div><b>{d.zimmer || '–'}</b><span>Zimmer</span></div>
+      <div><b>{d.baeder || '–'}</b><span>Badezimmer</span></div>
+      <div><b>{qm(d.wohnflaeche)}</b><span>Wohn-/Nutzfläche</span></div>
+      <div><b>{qm(d.grundstueck)}</b><span>Grundstück</span></div>
+    </div>
+    <div class="xp-desc"><Fragment set:html={richText(o.beschreibung) || `<p>${o.kurztext}</p>`} /><a class="btn" href="#anfrage" style="margin-top:10px">Jetzt Kontakt aufnehmen <Fragment set:html={ICON.arrow} /></a></div>
+  </div></section>
+
+  <section class="sec hell"><div class="wrap">
+    <h2 class="h3c">Immobiliendetails</h2>
+    <div class="details"><dl>{links.map(([a, b]) => <><dt>{a}</dt><dd>{b}</dd></>)}</dl><dl>{rechts.map(([a, b]) => <><dt>{a}</dt><dd>{b}</dd></>)}</dl></div>
+    {pos !== null && (
+      <>
+        <h2 class="h3c" style="margin-top:70px">Energieklasse</h2>
+        <div class="energy"><span class="mark" style={`left:${pos.toFixed(1)}%`}></span><div class="bar">{klassen.map((k, i) => <span style={`background:${farben[i]}`}>{k}</span>)}</div>
+          <div class="scale">{[0, 25, 50, 75, 100, 125, 150, 175, 200, 225].map((n) => <span>{n}</span>)}<span>250+</span></div>
+          <p class="val">{en.art === 'Verbrauchsausweis' ? 'Endenergieverbrauch' : 'Endenergiebedarf'} {en.kennwert} kWh/(m²·a){en.klasse && ` · Klasse ${en.klasse}`}</p></div>
+      </>
+    )}
+  </div></section>
+
+  {lage && (
+    <section class="sec"><div class="wrap"><h2 class="h3c">Lage &amp; Region</h2>
+      <OsmKarte lat={lage[0]} lng={lage[1]} radius={500} titel={`Ungefähre Lage ${o.ort}`} />
+      <div class="mapnote"><span>Kreis ≈ 1 km Durchmesser · genaue Adresse auf Anfrage</span><span>{o.plz} {o.ort}</span></div>
+    </div></section>
+  )}
+
+  <section class="sec hell" id="anfrage"><div class="wrap contactbox">
+    <div><span class="label" style="display:block;margin-bottom:18px">Anfrage zu diesem Objekt</span><h2><span class="ln"><span>Interesse?</span></span><span class="ln"><span class="blue">Sprich mit uns.</span></span></h2><PersonBox /></div>
+    <div><Anfrage typ="objekt" objekt={`${o.titel} (${o.ort})${o.externeId ? ' · ID ' + o.externeId : ''}`} /></div>
+  </div></section>
+
+  {weitere.length > 0 && <section class="angebote" style="background:#fff"><div class="wrap"><div class="head"><h2>Weitere <span class="blue">Angebote</span></h2></div>{weitere.map((x: any) => <ObjKarte o={x} />)}<div class="more"><a class="btn" href="/immobilien/">Alle Angebote <Fragment set:html={ICON.arrow} /></a></div></div></section>}
+  <CtaBandInner />
+</main>
+</Base>

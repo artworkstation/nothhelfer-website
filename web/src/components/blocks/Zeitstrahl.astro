@@ -1,0 +1,7 @@
+---
+const { b } = Astro.props
+---
+<section class="sec hell"><div class="wrap grid2">
+  <div>{b.label && <span class="label">{b.label}</span>}<h2>{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span class="blue">{b.zeile2}</span></span>}</h2></div>
+  <ul class="timeline">{(b.eintraege || []).map((x: any) => <li class="fadeup"><b>{x.jahr}</b>{x.text}</li>)}</ul>
+</div></section>

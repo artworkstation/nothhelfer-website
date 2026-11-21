@@ -1,0 +1,40 @@
+---
+import Base from '../../layouts/Base.astro'
+import Crumbs from '../../components/Crumbs.astro'
+import Img from '../../components/Img.astro'
+import CtaBandInner from '../../components/CtaBandInner.astro'
+import { getRatgeber, datum } from '../../lib/cms'
+import { richText } from '../../lib/richtext'
+import { ICON } from '../../lib/icons'
+
+export async function getStaticPaths() {
+  return (await getRatgeber()).map((r: any) => ({ params: { slug: r.slug }, props: { r } }))
+}
+const { r } = Astro.props as any
+const html = richText(r.inhalt)
+const worte = (html.replace(/<[^>]+>/g, ' ') + ' ' + (r.lead || '')).split(/\s+/).filter(Boolean).length
+const minuten = Math.max(2, Math.round(worte / 200))
+const ld: any[] = [{
+  '@context': 'https://schema.org', '@type': 'Article', headline: r.titel, datePublished: r.datum, dateModified: r.updatedAt,
+  image: r.bild?.url, author: { '@type': 'Person', name: 'Erik Nothhelfer' }, publisher: { '@type': 'Organization', name: 'Immobilien Nothhelfer' },
+  description: r.lead,
+}]
+if (r.fragen?.length) ld.push({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: r.fragen.map((f: any) => ({ '@type': 'Question', name: f.frage, acceptedAnswer: { '@type': 'Answer', text: f.antwort } })) })
+---
+<Base title={r.seo?.metaTitel || `${r.titel} – Ratgeber Immobilien Nothhelfer`} description={r.seo?.metaBeschreibung || r.lead} ogImage={r.seo?.ogBild || r.bild} noindex={r.seo?.noindex} jsonld={ld}>
+<main>
+  <div style="height:78px"></div>
+  <Crumbs items={[{ name: 'Ratgeber', url: '/ratgeber/' }, { name: r.kategorie || r.titel }]} />
+  <section class="sec" style="padding-top:clamp(30px,4vw,60px)"><article class="article wrap">
+    <p class="meta">Ratgeber · {r.kategorie} · {datum(r.datum)} · Lesezeit ca. {minuten} Min.</p>
+    <h1>{r.titel}</h1>
+    <div class="page-hero short" style="margin:0 0 36px"><Img m={r.bild} alt="" eager /></div>
+    {r.lead && <p class="lead">{r.lead}</p>}
+    {r.kurzfassung?.length > 0 && <><h2>Das Wichtigste in Kürze</h2><ul>{r.kurzfassung.map((k: any) => <li>{k.punkt}</li>)}</ul></>}
+    <Fragment set:html={html} />
+    {r.fragen?.length > 0 && <><h2>Häufige Fragen</h2><div class="faq">{r.fragen.map((f: any) => <details><summary>{f.frage}</summary><p>{f.antwort}</p></details>)}</div></>}
+    <div class="btnrow"><a class="btn fill" href="/verkaufen/online-wertermittlung/">Immobilie bewerten <Fragment set:html={ICON.arrow} /></a><a class="btn" href="/kontakt/">Beratung anfragen <Fragment set:html={ICON.plus} /></a></div>
+  </article></section>
+  <CtaBandInner />
+</main>
+</Base>

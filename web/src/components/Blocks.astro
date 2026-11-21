@@ -1,0 +1,19 @@
+---
+/** Rendert die Bausteine einer Seite. Brotkrumen erscheinen nach dem Seitenkopf bzw. ganz oben. */
+import { BLOCKS } from './blocks'
+import Crumbs from './Crumbs.astro'
+interface Props { layout: any[]; crumbs?: { name: string; url?: string }[] }
+const { layout = [], crumbs } = Astro.props
+const first = layout[0]?.blockType
+const hatH1 = layout.some((b) => ['heroSzene', 'intro'].includes(b.blockType))
+// Ohne Intro bekommt der erste Baustein mit Überschrift die H1
+const h1Index = hatH1 ? -1 : layout.findIndex((b) => ['angebote', 'kundenstimmen', 'ansprechpartner', 'text'].includes(b.blockType))
+const oben = crumbs && first !== 'heroSzene' && first !== 'seitenkopf'
+const nachKopf = crumbs && first === 'seitenkopf'
+---
+{oben && <><div style="height:78px"></div><Crumbs items={crumbs!} /></>}
+{layout.map((b, i) => {
+  const C = BLOCKS[b.blockType]
+  if (!C) return null
+  return <><C b={b} i={i} h1={i === h1Index} />{nachKopf && i === 0 && <Crumbs items={crumbs!} />}</>
+})}

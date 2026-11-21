@@ -1,0 +1,45 @@
+---
+import { ICON } from '../lib/icons'
+interface Props { typ: 'kontakt' | 'gutachten' | 'suchauftrag' | 'objekt'; objekt?: string; titel?: string; orte?: string[] }
+const { typ, objekt, titel, orte = [] } = Astro.props
+const action = `${(import.meta.env.PUBLIC_CMS_URL || 'http://localhost:3000').replace(/\/$/, '')}/api/anfragen`
+const id = `f-${typ}`
+const btn = titel || ({ kontakt: 'Nachricht', gutachten: 'Anfrage', suchauftrag: 'Suchauftrag', objekt: 'Anfrage' } as const)[typ]
+const chips = (name: string, vals: string[], radio = false) => vals.map((v, i) => ({ name, v, id: `${id}-${name}${i}`, radio, checked: radio && i === 0 }))
+const suchOrte = orte.length ? [...orte, 'ganze Region'] : ['Ulm', 'Neu-Ulm', 'ganze Region']
+---
+<form class="form" method="post" action={action} data-anfrage={typ} data-ok={`${id}-ok`} novalidate={false}>
+  {typ === 'objekt' && <div class="field full"><label for={`${id}-o`}>Objekt</label><input id={`${id}-o`} name="objekt" value={objekt} readonly /></div>}
+  {typ === 'kontakt' && (
+    <div class="field full"><label>Anliegen</label><div class="chips">
+      {chips('anliegen', ['Verkaufen', 'Kaufen / Mieten', 'Gutachten', 'Sonstiges'], true).map((c) => <><input type="radio" name={c.name} id={c.id} value={c.v} checked={c.checked} /><label for={c.id}>{c.v}</label></>)}
+    </div></div>
+  )}
+  {typ === 'gutachten' && (
+    <>
+      <div class="field"><label for={`${id}-art`}>Objektart</label><select id={`${id}-art`} name="objektart"><option>Haus</option><option>Wohnung</option><option>Gewerbe</option><option>Sonstiges</option></select></div>
+      <div class="field"><label for={`${id}-ort`}>Ort</label><input id={`${id}-ort`} name="ort" placeholder="z. B. Ulm-Söflingen" /></div>
+      <div class="field"><label for={`${id}-wfl`}>Wohnfläche (m²)</label><input id={`${id}-wfl`} name="wohnflaeche" type="number" /></div>
+      <div class="field"><label for={`${id}-gr`}>Grundstück (m²)</label><input id={`${id}-gr`} name="grundstueck" type="number" /></div>
+    </>
+  )}
+  {typ === 'suchauftrag' && (
+    <>
+      <div class="field full"><label>Ich möchte</label><div class="chips">{chips('vermarktung', ['kaufen', 'mieten'], true).map((c) => <><input type="radio" name={c.name} id={c.id} value={c.v} checked={c.checked} /><label for={c.id}>{c.v}</label></>)}</div></div>
+      <div class="field full"><label>Objektart</label><div class="chips">{chips('objektart', ['Haus', 'Wohnung', 'Grundstück', 'Gewerbe', 'Kapitalanlage']).map((c) => <><input type="checkbox" name={c.name} id={c.id} value={c.v} /><label for={c.id}>{c.v}</label></>)}</div></div>
+      <div class="field full"><label>Wunschorte</label><div class="chips">{chips('orte', suchOrte).map((c) => <><input type="checkbox" name={c.name} id={c.id} value={c.v} /><label for={c.id}>{c.v}</label></>)}</div></div>
+      <div class="field"><label for={`${id}-zi`}>Zimmer ab</label><select id={`${id}-zi`} name="zimmer"><option>egal</option><option>2</option><option>3</option><option>4</option><option>5+</option></select></div>
+      <div class="field"><label for={`${id}-wfl`}>Wohnfläche ab (m²)</label><input id={`${id}-wfl`} name="wohnflaeche" type="number" placeholder="z. B. 100" /></div>
+      <div class="field"><label for={`${id}-bud`}>Budget / Miete bis (€)</label><input id={`${id}-bud`} name="budget" type="number" placeholder="z. B. 550000" /></div>
+      <div class="field"><label for={`${id}-ein`}>Einzug ab</label><input id={`${id}-ein`} name="einzug" placeholder="z. B. Frühjahr 2027" /></div>
+    </>
+  )}
+  <div class="field"><label for={`${id}-n`}>Name</label><input id={`${id}-n`} name="name" required autocomplete="name" placeholder="Vor- und Nachname" /></div>
+  <div class="field"><label for={`${id}-t`}>Telefon</label><input id={`${id}-t`} name="telefon" autocomplete="tel" placeholder="Für Rückfragen" /></div>
+  <div class="field full"><label for={`${id}-e`}>E-Mail</label><input id={`${id}-e`} name="email" type="email" required autocomplete="email" placeholder="name@beispiel.de" /></div>
+  <div class="field full"><label for={`${id}-m`}>Nachricht</label><textarea id={`${id}-m`} name="nachricht" placeholder="Dein Anliegen"></textarea></div>
+  <div class="hp" aria-hidden="true"><label>Bitte leer lassen<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+  <label class="check full"><input type="checkbox" name="datenschutz" required /> Ich stimme der Verarbeitung meiner Daten gemäß <a href="/datenschutz/" style="text-decoration:underline">Datenschutzerklärung</a> zu.</label>
+  <div class="full"><button class="btn fill" type="submit">{btn} senden <Fragment set:html={ICON.arrow} /></button><p class="err" role="alert"></p></div>
+</form>
+<div class="success" id={`${id}-ok`}><h3>Vielen Dank!</h3><p>Deine Anfrage ist eingegangen. Wir melden uns innerhalb eines Werktags bei dir.</p></div>

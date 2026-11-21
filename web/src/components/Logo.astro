@@ -1,0 +1,7 @@
+---
+import paths from '../assets/script_paths.txt?raw'
+interface Props { text?: string; schrift?: string }
+const { text = '#3f4a52', schrift = '#302f77' } = Astro.props
+const d = paths.split('\n').filter(Boolean)
+---
+<svg viewBox="45 160 745 275" role="img" aria-label="Immobilien Nothhelfer"><text x="49" y="212" fill={text} font-family="Roboto, sans-serif" font-size="58" letter-spacing="2">IMMOBILIEN</text><g fill={schrift}>{d.map((p) => <path d={p} />)}</g></svg>

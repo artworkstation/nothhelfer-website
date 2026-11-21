@@ -1,0 +1,7 @@
+---
+const { b } = Astro.props
+---
+<section class="sec"><div class="wrap grid2"><div>{b.label && <span class="label">{b.label}</span>}</div>
+  <div class="fadeup"><ul class="list-check" style="columns:1">{(b.punkte || []).map((p: any) => <li>{p.text}</li>)}</ul>
+    <div class="badgerow"><img src="/img/badge-ivd.svg" alt="IVD" loading="lazy" /><img src="/img/badge-din.jpg" alt="DIN EN 15733" loading="lazy" /><img src="/img/badge-hg.png" alt="Haus &amp; Grund" loading="lazy" /></div></div>
+</div></section>

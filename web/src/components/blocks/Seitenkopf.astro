@@ -1,0 +1,10 @@
+---
+import Img from '../Img.astro'
+import { href } from '../../lib/cms'
+const { b } = Astro.props
+const k = b.kacheln || []
+---
+<div class={b.kurz ? 'page-hero short' : 'page-hero'}>
+  <Img m={b.bild} alt="" eager />
+  {k.length > 0 && <div class="tiles">{k.map((t: any) => <a href={href(t.link)} class="tile"><Img m={t.bild} alt="" sizes="220px" /><span set:html={t.text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>')} /></a>)}</div>}
+</div>

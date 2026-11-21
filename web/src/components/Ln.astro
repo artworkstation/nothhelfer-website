@@ -1,0 +1,7 @@
+---
+/** Zeilen-Reveal: jede Zeile fährt von unten ein */
+interface Props { z1?: string | null; z2?: string | null; tag?: string; style?: string; class?: string }
+const { z1, z2, tag = 'h2', style, class: cls } = Astro.props
+const Tag = tag as any
+---
+{(z1 || z2) && <Tag style={style} class={cls}>{z1 && <span class="ln"><span>{z1}</span></span>}{z2 && <span class="ln"><span class="blue">{z2}</span></span>}</Tag>}

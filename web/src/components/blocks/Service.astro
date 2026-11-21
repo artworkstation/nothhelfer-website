@@ -1,0 +1,23 @@
+---
+import Img from '../Img.astro'
+import { getEinstellungen, href, tel } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+const { b } = Astro.props
+const e = await getEinstellungen()
+---
+<section class="service">
+  {b.label && <div class="wrap"><span class="label">{b.label}</span></div>}
+  {(b.zeilen || []).map((z: any, k: number) => (
+    <a class="row" href={href(z.link)}>
+      <span class="bgim">{z.bild && <Img m={z.bild} sizes="100vw" />}</span>
+      <span class="num">{k + 1}</span>
+      <p>{z.text}</p>
+      <span class="word">{z.wort}</span>
+      <Fragment set:html={ICON.arrowx} />
+    </a>
+  ))}
+  <div class="outro">
+    {b.outro && <p class="fadeup">{b.outro}</p>}
+    <a href={tel(e.telefon)} class="btn light fadeup">{b.buttonText || 'Jetzt anrufen'} <Fragment set:html={ICON.phone} /></a>
+  </div>
+</section>

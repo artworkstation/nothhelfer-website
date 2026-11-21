@@ -1,0 +1,17 @@
+---
+import Img from './Img.astro'
+import { ICON } from '../lib/icons'
+import { datum } from '../lib/cms'
+interface Props { o: any; fade?: boolean }
+const { o, fade = true } = Astro.props
+const url = `/immobilien/${o.slug}/`
+---
+<article class={fade ? 'obj fadeup' : 'obj'} data-art={o.vermarktung} data-ort={o.ort} data-typ={o.objektart}>
+  <div class="txt">
+    <div class="meta"><span>{datum(o.eingestellt)}</span><span>{o.plz} {o.ort}</span><span class="tagk">{o.vermarktung}</span>{o.objektstatus === 'reserviert' && <span class="tagk">reserviert</span>}</div>
+    <h3>{o.teaser}</h3>
+    <p>{o.kurztext}</p>
+    <a class="btn" href={url}>Jetzt mehr erfahren <Fragment set:html={ICON.plus} /></a>
+  </div>
+  <a class="im" href={url} tabindex="-1" aria-hidden="true"><Img m={o.bilder?.[0]} alt={o.titel} sizes="(max-width: 900px) 100vw, 50vw" /></a>
+</article>

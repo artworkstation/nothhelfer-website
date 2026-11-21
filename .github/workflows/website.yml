@@ -1,0 +1,51 @@
+# Baut die statische Website (Astro) und lädt sie per SSH/rsync zu Mittwald hoch.
+# Läuft bei Änderungen im Ordner web/, bei jeder Veröffentlichung im CMS
+# (repository_dispatch „cms-publish“) und auf Knopfdruck.
+name: Website bauen & veröffentlichen
+
+on:
+  push:
+    branches: [main]
+    paths: ['web/**', '.github/workflows/website.yml']
+  repository_dispatch:
+    types: [cms-publish]
+  workflow_dispatch:
+
+concurrency:
+  group: website-deploy
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    env:
+      CMS_URL: ${{ vars.CMS_URL }}
+      PUBLIC_CMS_URL: ${{ vars.CMS_URL }}
+      SITE_URL: ${{ vars.SITE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Anlass
+        run: echo "Ausgelöst durch ${{ github.event_name }} ${{ github.event.client_payload.reason }}"
+      - name: SSH-Schlüssel einrichten
+        if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          ssh-keyscan -H "${{ secrets.DEPLOY_SSH_HOST }}" >> ~/.ssh/known_hosts
+      - name: Hochladen (rsync)
+        if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+        run: |
+          rsync -az --delete -e "ssh -i ~/.ssh/id_deploy" dist/ "${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/public/"
+          rsync -az -e "ssh -i ~/.ssh/id_deploy" deploy/nginx.conf "${{ secrets.DEPLOY_SSH_USER }}@${{ secrets.DEPLOY_SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/nginx.conf"

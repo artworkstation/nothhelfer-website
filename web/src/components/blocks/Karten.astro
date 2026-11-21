@@ -1,0 +1,29 @@
+---
+import Img from '../Img.astro'
+import { href } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+const { b } = Astro.props
+const hasHead = b.label || b.zeile1 || b.zeile2 || b.text
+---
+<section class="gut" style={b.hintergrund === 'hell' ? 'background:var(--hell)' : undefined}>
+  <div class="wrap">
+    {hasHead && (
+      <div class="head">
+        <div>{b.label && <span class="label" style="display:block;margin-bottom:20px">{b.label}</span>}
+          {(b.zeile1 || b.zeile2) && <h2>{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span class="blue">{b.zeile2}</span></span>}</h2>}</div>
+        {b.text && <p class="fadeup">{b.text}</p>}
+      </div>
+    )}
+    <div class="cards">
+      {(b.karten || []).map((c: any) => (
+        <a href={href(c.link)} class="card fadeup">
+          {c.bild && <div class="im"><Img m={c.bild} alt="" sizes="(max-width: 900px) 100vw, 33vw" /></div>}
+          {c.tag && <span class="tag">{c.tag}{c.neu && <span class="new">Neu</span>}</span>}
+          <h3>{c.titel}</h3>
+          {c.text && <p>{c.text}</p>}
+          {c.buttonText && <span class="btn">{c.buttonText} <Fragment set:html={c.icon === 'pfeil' ? ICON.arrow : ICON.plus} /></span>}
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

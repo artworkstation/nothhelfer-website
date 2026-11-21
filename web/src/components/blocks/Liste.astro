@@ -1,0 +1,10 @@
+---
+const { b } = Astro.props
+const cls = b.hintergrund === 'hell' ? 'sec hell' : b.hintergrund === 'dunkel' ? 'sec dark' : 'sec'
+const dark = b.hintergrund === 'dunkel'
+---
+<section class={cls}><div class="wrap grid2">
+  <div>{b.label && <span class="label" style={dark ? 'color:#fff' : undefined}>{b.label}</span>}
+    {(b.zeile1 || b.zeile2) && <h2 style={dark ? 'color:#fff' : undefined}>{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span class="blue">{b.zeile2}</span></span>}</h2>}</div>
+  <div class="fadeup"><ul class="list-check">{(b.punkte || []).map((p: any) => <li>{p.text}</li>)}</ul>{b.hinweis && <p class="note" style={dark ? 'color:#c9ccd8' : undefined}>{b.hinweis}</p>}</div>
+</div></section>

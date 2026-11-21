@@ -1,0 +1,8 @@
+---
+const { b } = Astro.props
+---
+<section class="intro"><div class="wrap"><div class="grid2">
+  <div>{b.label && <span class="label" style="display:block;margin-bottom:18px">{b.label}</span>}
+    <h1 style="font-size:var(--h2);font-weight:500;line-height:1.08">{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span class="blue">{b.zeile2}</span></span>}</h1></div>
+  <div class="fadeup">{b.lead && <p class="lead">{b.lead}</p>}{b.text && <p>{b.text}</p>}</div>
+</div></div></section>

@@ -1,0 +1,46 @@
+---
+import ObjKarte from '../ObjKarte.astro'
+import { getObjekte } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+const { b, h1 } = Astro.props
+const alle = await getObjekte()
+const gefiltert = b.vermarktung && b.vermarktung !== 'alle' && !b.mitFilter ? alle.filter((o: any) => o.vermarktung === b.vermarktung) : alle
+const liste = b.mitFilter ? gefiltert : b.anzahl ? gefiltert.slice(0, b.anzahl) : gefiltert
+const orte = [...new Set(alle.map((o: any) => o.ort))].sort()
+const start = b.vermarktung && b.vermarktung !== 'alle' ? b.vermarktung : 'Alle'
+const H = h1 ? 'h1' : 'h2'
+---
+<section class="angebote" style={[b.hintergrund === false ? 'background:#fff' : '', b.mitFilter ? 'padding-top:clamp(40px,5vw,70px)' : ''].filter(Boolean).join(';') || undefined}>
+  <div class="wrap">
+    <div class="head">
+      <H style={h1 ? 'font-size:var(--h2);font-weight:500;line-height:1.08' : undefined}>{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span class="blue">{b.zeile2}</span></span>}</H>
+      <div class="fadeup">
+        {b.text && <p set:html={b.text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\n/g, '<br>')} />}
+        {b.mitFilter ? (
+          <div class="btnrow" style="margin-top:0"><button class="btn" id="filtertoggle" type="button">Suche filtern <Fragment set:html={ICON.plus} /></button><a class="btn" href="/immobilien/suchauftrag/">Suchauftrag anlegen <Fragment set:html={ICON.arrow} /></a></div>
+        ) : (
+          <a href="/immobilien/" class="btn">Alle Angebote <Fragment set:html={ICON.arrow} /></a>
+        )}
+      </div>
+    </div>
+    {b.mitFilter ? (
+      <>
+        <div class="filterbar" id="filterbar">
+          <select id="f-ort" aria-label="Ort"><option value="">Ort – alle</option>{orte.map((o) => <option>{o}</option>)}</select>
+          <label><input type="checkbox" value="Haus" /> Haus</label><label><input type="checkbox" value="Wohnung" /> Wohnung</label><label><input type="checkbox" value="Gewerbe" /> Gewerbe</label>
+          <div class="seg" id="seg" style="justify-self:end">{[['Alle', 'Alle'], ['Kauf', 'Kaufen'], ['Miete', 'Mieten']].map(([v, n]) => <button type="button" data-v={v} class={v === start ? 'on' : undefined}>{n}</button>)}</div>
+        </div>
+        <div class="listhead"><span>unsere Angebote</span><span id="objcount"></span></div>
+        <div id="objlist" data-art={start} style="margin-top:16px">{liste.map((o: any) => <ObjKarte o={o} fade={false} />)}</div>
+        <div class="empty" id="objempty" style="display:none">Aktuell kein passendes Angebot. <a class="btn" href="/immobilien/suchauftrag/">Suchauftrag anlegen <Fragment set:html={ICON.arrow} /></a></div>
+        <button class="loadmore" id="loadmore" type="button">weitere Angebote laden</button>
+      </>
+    ) : (
+      <>
+        {liste.map((o: any) => <ObjKarte o={o} />)}
+        {liste.length === 0 && <div class="empty">Aktuell keine Angebote online – sprich uns gern an.</div>}
+        <div class="more fadeup"><a href="/immobilien/suchauftrag/" class="btn">Suchauftrag anlegen <Fragment set:html={ICON.arrow} /></a><span class="pill">Neu</span></div>
+      </>
+    )}
+  </div>
+</section>

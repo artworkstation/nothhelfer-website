@@ -1,0 +1,9 @@
+---
+import { ICON } from '../lib/icons'
+import { getEinstellungen, tel } from '../lib/cms'
+interface Props { titel?: string | null; text?: string | null }
+const e = await getEinstellungen()
+const { titel = 'Lass uns sprechen.', text = 'Persönlich in der Fischergasse in der Ulmer Altstadt, am Telefon oder per Videoberatung.' } = Astro.props
+---
+<section class="sec dark"><div class="wrap"><div class="grid2" style="align-items:end"><h2 style="color:#fff"><span class="ln"><span>{titel || 'Lass uns sprechen.'}</span></span></h2>
+<div class="fadeup"><p style="font-size:20px;font-weight:500;margin-bottom:24px">{text || 'Persönlich in der Fischergasse in der Ulmer Altstadt, am Telefon oder per Videoberatung.'}</p><div class="btnrow"><a class="btn light" href={tel(e.telefon)}>Jetzt anrufen <Fragment set:html={ICON.phone} /></a><a class="btn light" href="/kontakt/">Kontakt aufnehmen <Fragment set:html={ICON.arrow} /></a></div></div></div></div></section>

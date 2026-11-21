@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro'
+import { ICON } from '../lib/icons'
+---
+<Base title="Seite nicht gefunden – Immobilien Nothhelfer" noindex>
+<main><div style="height:78px"></div>
+  <section class="intro"><div class="wrap"><div class="grid2">
+    <div><span class="label" style="display:block;margin-bottom:18px">Fehler 404</span><h1 style="font-size:var(--h2);font-weight:500;line-height:1.08"><span class="ln"><span>Diese Seite</span></span><span class="ln"><span class="blue">gibt es nicht (mehr).</span></span></h1></div>
+    <div class="fadeup"><p class="lead">Vielleicht ist das Angebot bereits vermittelt. Schau dir die aktuellen Immobilien an oder sprich uns direkt an.</p>
+      <div class="btnrow"><a class="btn fill" href="/immobilien/">Aktuelle Immobilien <Fragment set:html={ICON.arrow} /></a><a class="btn" href="/">Zur Startseite <Fragment set:html={ICON.arrow} /></a></div></div>
+  </div></div></section>
+</main></Base>

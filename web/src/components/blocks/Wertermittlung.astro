@@ -1,0 +1,27 @@
+---
+import { getGemeinden } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+const { b } = Astro.props
+const ico = (d: string) => `<svg viewBox="0 0 34 34" fill="none" stroke="currentColor" stroke-width="1.2">${d}</svg>`
+const typen = [
+  ['Haus', ico('<path d="M4 16L17 5l13 11M8 13v15h18V13M14 28v-8h6v8"/>')],
+  ['Wohnung', ico('<rect x="7" y="4" width="20" height="26"/><path d="M12 9h3M19 9h3M12 15h3M19 15h3M12 21h3M19 21h3"/>')],
+  ['Mehrfamilienhaus', ico('<rect x="4" y="9" width="12" height="21"/><rect x="18" y="4" width="12" height="26"/><path d="M8 14h4M8 20h4M22 9h4M22 15h4M22 21h4"/>')],
+]
+const orte = [...new Set(['Ulm', 'Neu-Ulm', ...(await getGemeinden()).map((g: any) => g.name)])]
+---
+<section class="sec hell"><div class="wrap">
+  <div class="wiz" id="wiz"><div class="prog"><i></i></div>
+    <div class="ws"><p class="stepnum">Schritt 1 von 4</p><h3>Welche Immobilie möchtest du bewerten?</h3><div class="opts" data-k="typ">{typen.map(([v, s]) => <button type="button" class="opt" data-v={v}><Fragment set:html={s} />{v}</button>)}</div></div>
+    <div class="ws"><p class="stepnum">Schritt 2 von 4</p><h3>Wo liegt die Immobilie und wie groß ist sie?</h3><div class="form">
+      <div class="field"><label for="w-ort">Ort</label><select id="w-ort">{orte.map((o) => <option value={o}>{o}</option>)}<option value="andere">andere Gemeinde der Region</option></select></div>
+      <div class="field"><label for="w-wfl">Wohnfläche (m²)</label><input id="w-wfl" type="number" value="140" /></div>
+      <div class="field"><label for="w-gr">Grundstück (m²)</label><input id="w-gr" type="number" value="500" /></div>
+      <div class="field"><label for="w-bj">Baujahr</label><input id="w-bj" type="number" value="1995" /></div></div></div>
+    <div class="ws"><p class="stepnum">Schritt 3 von 4</p><h3>In welchem Zustand ist sie?</h3><div class="opts" data-k="zust" style="grid-template-columns:repeat(2,1fr)">{['renovierungsbedürftig', 'gepflegt', 'modernisiert', 'neuwertig'].map((v) => <button type="button" class="opt" data-v={v}>{v}</button>)}</div></div>
+    <div class="ws"><p class="stepnum">Deine erste Preisindikation</p><h3>Geschätzter Marktwert</h3><p class="range-out" id="w-res"></p><div class="range-bar"></div><p id="w-sum" style="font-size:14px"></p>
+      {b.hinweis && <div class="disclaimer">{b.hinweis}</div>}
+      <div class="btnrow"><a class="btn fill" href="/kontakt/">Persönliche Bewertung anfragen <Fragment set:html={ICON.arrow} /></a><a class="btn" href="/gutachten/">Zum Gutachten <Fragment set:html={ICON.plus} /></a></div></div>
+    <div class="nav2"><button class="btn" id="wback" type="button">Zurück</button><button class="btn fill" id="wnext" type="button">Weiter</button></div>
+  </div>
+</div></section>

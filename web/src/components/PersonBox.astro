@@ -1,0 +1,7 @@
+---
+import { getEinstellungen } from '../lib/cms'
+import Img from './Img.astro'
+interface Props { portrait?: any }
+const e = await getEinstellungen()
+---
+<div class="person">{(Astro.props.portrait || e.portrait) && <Img m={Astro.props.portrait || e.portrait} alt={e.inhaber} sizes="120px" />}<div><b>{e.inhaber}</b>Inhaber · Dipl.-Sachverständiger (DIA)<br />Tel. {e.telefon}</div></div>

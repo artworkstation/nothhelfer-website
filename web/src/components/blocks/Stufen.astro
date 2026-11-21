@@ -1,0 +1,19 @@
+---
+import { href } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+const { b } = Astro.props
+---
+<section class="stufen">
+  <div class="wrap">
+    {b.label && <div class="top"><span class="label">{b.label}</span></div>}
+    <div class="grid2">
+      <div class="left">
+        <h2>{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span>{b.zeile2}</span></span>}</h2>
+        {b.button?.text && <a href={href(b.button.link)} class="btn fadeup">{b.button.text} <Fragment set:html={ICON.arrow} /></a>}
+      </div>
+      <ol class="steps">
+        {(b.schritte || []).map((s: any, k: number) => <li class="step"><span class="num">{k + 1}</span><span class="t">{s.titel} {s.text && <span>{s.text}</span>}</span></li>)}
+      </ol>
+    </div>
+  </div>
+</section>

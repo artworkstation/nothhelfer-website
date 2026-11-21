@@ -1,0 +1,32 @@
+---
+import Anfrage from '../Anfrage.astro'
+import PersonBox from '../PersonBox.astro'
+import OsmKarte from '../OsmKarte.astro'
+import { getEinstellungen, getGemeinden, tel } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+const { b, portrait } = Astro.props
+const e = await getEinstellungen()
+const orte = ['Ulm', 'Neu-Ulm', ...(await getGemeinden()).map((g: any) => g.name)]
+const typ = b.formular || 'kontakt'
+---
+{b.mitKontaktdaten ? (
+  <section class="sec hell" id="anfrage"><div class="wrap kontakt-grid">
+    <div class="kblock fadeup">
+      <p><b>{e.firma}</b><br />{e.inhaber}<br />{e.strasse}<br />{e.plz} {e.ort}</p>
+      <p style="margin-top:18px">Telefon <a href={tel(e.telefon)}>{e.telefon}</a>{e.fax && <><br />Fax {e.fax}</>}<br /><a href={`mailto:${e.email}`}>{e.email}</a></p>
+      {e.termine && <p style="margin-top:18px"><b>Termine</b><br />{e.termine}</p>}
+      <div class="btnrow"><a class="btn fill" href={tel(e.telefon)}>Jetzt anrufen <Fragment set:html={ICON.phone} /></a></div>
+      <div style="margin-top:34px"><OsmKarte lat={e.lat} lng={e.lng} titel={`Karte ${e.strasse}, ${e.ort}`} /></div>
+    </div>
+    <div><Anfrage typ={typ} orte={orte} /></div>
+  </div></section>
+) : typ === 'suchauftrag' ? (
+  <section class="sec hell" id="anfrage"><div class="wrap" style="max-width:980px"><Anfrage typ="suchauftrag" orte={orte} /></div></section>
+) : (
+  <section class="sec hell" id="anfrage"><div class="wrap contactbox">
+    <div>{b.label && <span class="label" style="display:block;margin-bottom:18px">{b.label}</span>}
+      <h2>{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span class="blue">{b.zeile2}</span></span>}</h2>
+      <PersonBox portrait={portrait} /></div>
+    <div><Anfrage typ={typ} orte={orte} /></div>
+  </div></section>
+)}

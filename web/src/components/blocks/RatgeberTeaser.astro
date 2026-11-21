@@ -1,0 +1,16 @@
+---
+import Img from '../Img.astro'
+import { getRatgeber } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+const { b, imRatgeber } = Astro.props
+const alle = await getRatgeber()
+const liste = b.anzahl ? alle.slice(0, b.anzahl) : alle
+---
+<section class="rat">
+  <div class="wrap">
+    {!imRatgeber && <div class="head"><h2><span class="ln"><span>{b.headline || 'Ratgeber'}</span></span></h2><a href="/ratgeber/" class="btn fadeup">Alle Beiträge <Fragment set:html={ICON.arrow} /></a></div>}
+    <div class="cards">
+      {liste.map((r: any) => <a href={`/ratgeber/${r.slug}/`} class="card fadeup"><div class="im"><Img m={r.bild} alt="" sizes="(max-width: 900px) 100vw, 33vw" /></div><span class="date">Ratgeber · {r.kategorie}</span><h3>{r.titel}</h3></a>)}
+    </div>
+  </div>
+</section>

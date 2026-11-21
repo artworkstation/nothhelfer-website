@@ -1,0 +1,6 @@
+---
+const { b } = Astro.props
+---
+<section class="sec"><div class="wrap">{b.label && <span class="label">{b.label}</span>}<ol class="process">
+  {(b.schritte || []).map((s: any, k: number) => <li class="fadeup"><span class="num">{k + 1}</span><h3>{s.titel}</h3>{s.text && <p>{s.text}</p>}</li>)}
+</ol></div></section>

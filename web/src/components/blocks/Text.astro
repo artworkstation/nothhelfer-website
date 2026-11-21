@@ -1,0 +1,17 @@
+---
+import { richText } from '../../lib/richtext'
+const { b, h1 } = Astro.props
+const H = h1 ? 'h1' : 'h2'
+const zwei = !h1 && (b.label || b.zeile1)
+---
+{zwei ? (
+  <section class="sec"><div class="wrap grid2">
+    <div>{b.label && <span class="label">{b.label}</span>}<H>{b.zeile1 && <span class="ln"><span>{b.zeile1}</span></span>}{b.zeile2 && <span class="ln"><span class="blue">{b.zeile2}</span></span>}</H></div>
+    <div class="fadeup prose" set:html={richText(b.inhalt)} />
+  </div></section>
+) : (
+  <section class="sec"><div class="wrap prose" style="max-width:900px;margin-left:max(0px,calc((100vw - var(--max)) / 2))">
+    {(b.zeile1 || b.zeile2) && <H style="font-size:var(--h2);font-weight:500;margin-bottom:24px">{b.zeile1}{b.zeile2 && <span class="blue"> {b.zeile2}</span>}</H>}
+    <Fragment set:html={richText(b.inhalt)} />
+  </div></section>
+)}

@@ -1,0 +1,9 @@
+---
+import { regionMap } from '../../lib/region'
+const { b } = Astro.props
+const e = b.eintraege || []
+---
+<section class="sec hell">
+  <div class="wrap grid2"><div>{b.label && <span class="label">{b.label}</span>}{b.text && <p class="fadeup">{b.text}</p>}</div><div class="fadeup" set:html={regionMap({ refs: Math.max(e.length * 5, 20), seed: 11 })} /></div>
+  {e.length > 0 && <div class="wrap"><div class="refgrid">{e.map((r: any) => <div class="ref fadeup"><b>{r.titel}</b>{[r.ort, r.jahr && `verkauft ${r.jahr}`].filter(Boolean).join(' · ')}</div>)}</div></div>}
+</section>

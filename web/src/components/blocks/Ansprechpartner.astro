@@ -1,0 +1,15 @@
+---
+import Img from '../Img.astro'
+import { href } from '../../lib/cms'
+import { ICON } from '../../lib/icons'
+import { richText } from '../../lib/richtext'
+const { b, h1 } = Astro.props
+const H = h1 ? 'h1' : 'h2'
+const icon = (b.button?.link || '').startsWith('mailto:') ? ICON.mail : ICON.arrow
+---
+<section class="komp" style="padding-top:clamp(40px,5vw,70px)"><div class="wrap"><div class="komp-grid">
+  <div><H style="font-size:var(--h2);font-weight:500;line-height:1.08;color:var(--blau);margin-bottom:40px"><span class="ln"><span>{b.name}</span></span></H>
+    {b.portrait && <div class="erik par" style="width:85%"><Img m={b.portrait} alt={b.name} sizes="(max-width: 900px) 80vw, 35vw" eager={h1} /></div>}</div>
+  <div>{b.bild && <div class="aerial par"><Img m={b.bild} sizes="(max-width: 900px) 100vw, 55vw" /></div>}
+    <div class="txt fadeup"><Fragment set:html={richText(b.text)} />{b.button?.text && <a href={href(b.button.link)} class="btn">{b.button.text} <Fragment set:html={icon} /></a>}</div></div>
+</div></div></section>

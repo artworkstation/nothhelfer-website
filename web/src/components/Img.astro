@@ -1,0 +1,7 @@
+---
+import { bild } from '../lib/cms'
+interface Props { m: any; alt?: string; sizes?: string; eager?: boolean; class?: string }
+const { m, alt, sizes = '100vw', eager = false, class: cls } = Astro.props
+const b = bild(m, alt)
+---
+{b && <img src={b.src} srcset={b.srcset} sizes={b.srcset ? sizes : undefined} width={b.w} height={b.h} alt={b.alt} loading={eager ? 'eager' : 'lazy'} decoding="async" class={cls} />}

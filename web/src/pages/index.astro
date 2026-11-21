@@ -1,0 +1,10 @@
+---
+import Base from '../layouts/Base.astro'
+import Blocks from '../components/Blocks.astro'
+import { getPages } from '../lib/cms'
+import { meta } from '../lib/seite'
+const page = (await getPages()).find((p: any) => p.pfad === 'startseite')
+if (!page) throw new Error('Seite „startseite“ fehlt im CMS')
+const m = meta(page, 'Immobilien Nothhelfer – Immobilienmakler & Sachverständiger in Ulm')
+---
+<Base {...m} home><main><Blocks layout={page.layout} /></main></Base>

@@ -1,0 +1,34 @@
+---
+import Img from '../Img.astro'
+import { getKundenstimmen } from '../../lib/cms'
+const { b, h1 } = Astro.props
+const alle = await getKundenstimmen()
+const qs = b.anzahl ? alle.slice(0, b.anzahl) : alle
+const stars = (n = 5) => '★'.repeat(n) + '☆'.repeat(5 - n)
+const H = h1 ? 'h1' : 'h2'
+---
+{b.bild ? (
+  <section class="stimmen" data-slider>
+    <div class="wrap">
+      <div class="top"><H><span class="ln"><span>{b.headline}</span></span></H>{b.label && <span class="label">{b.label}</span>}</div>
+      <div class="st-grid">
+        <div class="st-img"><Img m={b.bild} sizes="(max-width: 900px) 100vw, 50vw" /></div>
+        <div>
+          <div class="pager">{qs.map((_: any, k: number) => <button type="button" class={k === 0 ? 'on' : undefined} aria-label={`Kundenstimme ${k + 1}`}>{k + 1}</button>)}</div>
+          <div class="quotes">{qs.map((q: any, k: number) => <div class={k === 0 ? 'q on' : 'q'}><blockquote>„{q.zitat}“</blockquote><div class="who"><span>{q.name}{q.ort && ` · ${q.ort}`}</span><span class="stars" aria-label={`${q.sterne || 5} von 5 Sternen`}>{stars(q.sterne)}</span></div></div>)}</div>
+          {b.hinweis && <p class="provenexpert">{b.hinweis}</p>}
+        </div>
+      </div>
+    </div>
+  </section>
+) : (
+  <>
+    <section class="stimmen">
+      <div class="wrap">
+        <div class="top"><H style="font-size:var(--h2);font-weight:500;color:var(--blau)"><span class="ln"><span>{b.headline}</span></span></H>{b.label && <span class="label">{b.label}</span>}</div>
+        <div class="quotes-list">{qs.map((q: any) => <div class="qcard fadeup"><blockquote>„{q.zitat}“</blockquote><div class="who" style="display:flex;justify-content:space-between;font-size:13px"><span>{q.name}{q.ort && ` · ${q.ort}`}</span><span class="stars">{stars(q.sterne)}</span></div></div>)}</div>
+        {b.hinweis && <p class="provenexpert">{b.hinweis}</p>}
+      </div>
+    </section>
+  </>
+)}
